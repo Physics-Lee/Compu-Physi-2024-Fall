@@ -7,7 +7,7 @@
   * VS Code, Cursor
 * `07:20` HW1、向量化编程
 * `08:10` HW2、反函数法
-* `11:01` `Why Variance.ipynb`
+* `11:01` `Why_Variance_of_Monte_Carlo_Is_Important.ipynb`
 
 
 
@@ -46,10 +46,10 @@
 
 # Metropolis
 
-* `07:40` `Why Metropolis.ipynb`
+* `07:40` `Why_Metropolis.ipynb`
   * HW3
 * `31:06` HW4
-* `32:02` `高维球的体积.ipynb`
-* `36:02` `Why Monte Carlo in High Dim.ipynb`
-* `43:00` `Why Class.ipynb`
+* `32:02` `Weird_Property_of_High_Dim.ipynb`
+* `36:02` `Why_Monte_Carlo_in_High_Dim.ipynb`
+* `43:00` `Why_Class.ipynb`
 * `47:17-51:17` Summary.
