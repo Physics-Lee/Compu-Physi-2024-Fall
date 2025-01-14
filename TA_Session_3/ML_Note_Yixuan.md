@@ -606,6 +606,38 @@ A: 有两次最激烈
 
 
 
+## Soft-Max
+
+Q: Soft-Max 这名字是咋来的？有Hard-Max吗？
+
+A: 它的定义是：$\frac{e^{z_i}}{\sum_i e^{z_i}}$。
+
+名字来源嘛，你可以认为，传统的 Max 是Hard-Max，而它则是一种柔软的max。
+
+比如，当输入是$[3, 2, 1, -1]$时。Hard-Max的结果是$[1, 0, 0, 0]$，Soft-Max的结果是$[0.657, 0.242, 0.089, 0.012]$。
+
+
+
+## Sigmoid Like Curve
+
+Q: S型曲线只有 $\frac{1}{1+e^{-x}}$ 吗？如果不是，为什么机器学习只用它？
+
+A: S型曲线有多种，[维基百科有收录](https://en.wikipedia.org/wiki/Sigmoid_function)。
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Gjl-t%28x%29.svg/2880px-Gjl-t%28x%29.svg.png" alt="img" style="zoom: 25%;" />
+
+Q: 那为什么用它比较多呢？(PS: 其实tanh也有人用)
+
+A: 一个原因是求导方便。
+
+
+
+Q:  $\frac{1}{1+e^{-x}}$ 和 Soft-Max 的关系？
+
+A: 前者用于二分类，后者用于多分类。（用前者时候，通常把大于0.5的标记为一类，小于0.5的标记成另一类。）
+
+
+
 ## 问答 | QA
 
 Q: OpenAI等公司发布模型时时候会有测试集泄露的问题？
@@ -1816,21 +1848,191 @@ P.S.: **此处的概率不是频率学派的概率，是贝叶斯学派的概率
 
 ## 香农熵 | Shannon Information
 
-数学公式：
+参考：[Entropy_(information_theory) on Wikipedia](https://en.wikipedia.org/wiki/Entropy_(information_theory))。
+
+**定义**：
 $$
-Shannon \ Info := - \sum_i P_i log_2 P_i
+H(f(x)) := - \sum_i f(x_i) log_2(f(x_i)) = E_{f(x)}(-log_2f(x))
 $$
 目标：定量地定义“信息"。
 
-灵感：$S = k ln W$；[猜数游戏](https://cloud.tencent.com/developer/news/918445)。
+**灵感**：
 
-注：我录制过一个视频——[如何从玻尔兹曼公式推导出香农对于信息的定义？](https://www.bilibili.com/video/BV1PazyYMETc/?spm_id_from=333.1387.upload.video_card.click&vd_source=38ef32ce71fc9a790036b5de6f876e1a)。看了你就懂了。
+1. [$S = k ln W$](https://www.bilibili.com/video/BV1PazyYMETc/?spm_id_from=333.1387.upload.video_card.click&vd_source=38ef32ce71fc9a790036b5de6f876e1a)
+2. [猜数游戏](https://cloud.tencent.com/developer/news/918445)。
+
+数学意义：$f(x)$的泛函。
+
+物理意义：该离散型随机变量的不确定度。
+
+下界：0
+
+上界：$log_2(n)$
+
+
+
+下界的推导：
+
+当$f(x) = [0,0,...,0,1,0,...]$时，$H(f(x))$ 等于0。这时候，它的不确定性为0，含有的香农信息量也为0。这个事实的物理意义是——因为你已经知道$X$等于什么了，所以X的不确定性为0。
+
+
+
+上界的推导：
+
+根据琴生不等式 ([Jensen Inequlity](https://en.wikipedia.org/wiki/Jensen%27s_inequality))，
+$$
+\sum_i p_i log_2(\frac{1}{p_i}) \le log_2(\sum_i p_i \frac{1}{p_i}) = log_2(\sum_i 1) = log_2(n)
+$$
+显然，当$f(x)$为均匀分布时候，$H$ 刚好等于$log_2(n)$。这个事实的物理意义是——此时，因为你完全不知道$X$应该等什么，所以该分布的不确定性是最大的。
+
+当$f(x)$既不是均匀分布也不是独热的时候，$0 < H(f(x)) < log_2(n)$。
+
+
+
+Q: 信息一定要用香农的方式定义吗？
+
+A: 不一定。[Fisher Information](https://en.wikipedia.org/wiki/Fisher_information)，费雪信息，是另一种。它的物理意义是某个参数对似然函数有多大影响，即前者给出了多少后者的信息。如果没有明确指出，本文中所有的信息指的都是香农信息。
+
+
+
+Q: 交叉熵和香农信息的关系？
+
+A: 下文的KL散度、交叉熵、互信息都是建立在香农对信息的定义之上的。说难听点，都是后者的儿子或者孙子罢了。
+
+
+
+Q: 我听说，香农最开始发明信息论之后，测定了英文字母的熵，但是他具体如何编码呢？
+
+A: 早年有两种方法
+
+1. Shannon–Fano coding
+2. Huffman coding
+
+
+
+Q: 现在我们如何编码英文字母？
+
+A: ASCII/UTF-8。浪费了空间，增强了可读性。但是，当你压缩文件的时候，会用类似Huffman coding的方法。[ZIP用的就是Huffman Coding](https://www.dremio.com/wiki/huffman-coding/#:~:text=Huffman%20Coding%20is%20used%20in,in%20reduced%20data%20size%20overall.)。
+
+
+
+## KL散度 | KL Divergence
+
+参考：[Kullback–Leibler divergence on Wikipedia](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence)。
+
+**定义**：
+
+两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的KL Divergence为：
+$$
+D_{KL}(f(x),g(x)) := \sum_i p(x_i) log \frac{p(x_i)}{q(x_i)}
+$$
+**目标**：衡量两个分布之间的差异。
+
+> KL Divergence measures how one probability distribution diverges from a second, expected probability distribution. It quantifies the information lost when approximating one distribution with another. In a physical sense, it can be interpreted as a measure of inefficiency in using one distribution to represent another. It is often used in scenarios where one wants to understand how much information is "missed" when using a simpler model.
+
+**灵感**：香农给出信息的定义之后，很容易就能想到KL散度。
+
+数学意义：$f(x)$和$g(x)$的泛函。
+
+物理意义：$f(x)$和$g(x)$之间的距离。
+
+下届：0
+
+上界：$\infty$
+
+
+
+下界的推导：
+
+根据琴生不等式 ([Jensen Inequlity](https://en.wikipedia.org/wiki/Jensen%27s_inequality))，
+$$
+\sum_i p_i log_2(\frac{q_i}{p_i}) \le log_2(\sum_i p_i \frac{q_i}{p_i}) = log_2(\sum_i q_i) = log_2(1) = 0
+$$
+则
+$$
+\sum_i p_i log_2(\frac{q_i}{p_i}) \ge 0
+$$
+
+
+上界的推导：
+
+当$p(x_i)$不等于0而$q(x_i) \to 0$时，$D_{KL}$会趋向于无穷。因此它没有上界。
+
+
+
+Q: 为什么不直接叫距离/度量？
+
+A: 数学上的距离/度量 (Distance/Metric) 要满足对称性和三角不等式（[Metric Space on Wikipedia](https://en.wikipedia.org/wiki/Metric_space)），但是KL Divergence不满足。
+
+
+
+Q: 那为啥叫散度？
+
+A: 统计学家把满足距离四条定义里的前两条的叫散度。([Statistical Distance on Wikipedia](https://en.wikipedia.org/wiki/Statistical_distance))
+
+
+
+Q: 和物理上的散度有啥关系啊？
+
+A: 我感觉没啥关系。如果硬要扯上关系，它俩都有一种 separation 和 spread out 的感觉。
+
+
+
+Q: 能否把它改造成满足对称性和三角不等式的东西？
+
+A: 能。([Jensen–Shannon Divergence on Wikipedia](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence))
+
+
+
+## 交叉熵 | Cross Entropy
+
+定义：
+
+两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的Cross Entropy为：
+$$
+CE(f(x),q(x)) := - \sum_i f(x_i) log_2 \ g(x_i) = E_{f(x)}(- log_2 g(x))
+$$
+目标：衡量两个分布之间的差异。（和$D_{KL}$相同）
+
+灵感：香农给出信息的定义之后，很容易就能想到KL散度。
+
+物理意义：Cross Entropy represents the “average code length” you end up with if you encode data following f but use a code *optimized for* g.
+
+和上述两者的关系：显然，$CE(f,g) = D_{KL}(f,g) + H(f)$。
+
+上式的物理意义：(Cost with the wrong code)=(Penalty) + (Ideal Cost)
+
+
+
+Q: Cross-Entropy和似然的关系？
+
+A：两者相等。
+
+
+
+Q: Cross-Entropy 和Soft-Max, Sigmoid的关系？
+
+A: 前者作为损失函数，后者作为给出概率的方法。
+
+
+
+## Adam (Adaptive Moment Estimation)
+
+定义：
+
+<img src="ML_Note_Yixuan/image-20250114235701345.png" alt="image-20250114235701345" style="zoom:50%;" />
+
+目标：加速收敛；更Robust。
+
+灵感：几种早期自适应学习率算法（如 AdaGrad、RMSProp 等）、动量方法（Momentum）算法
+
+注：此处的动量指的是保留之前若干次迭代的一些东西。
 
 
 
 ## 基尼指数 | **Gini–Simpson index**
 
-数学公式：
+定义：
 $$
 Gini := \sum_i \sum_{j \neq i} P_i P_j
 $$
@@ -1847,7 +2049,7 @@ $$
 
 ## 自助法 | Boot-Strap
 
-数学公式：
+定义：
 
 <img src="ML_Note_Yixuan\image-20241219111827202.png" alt="image-20241219111827202" style="zoom:33%;" />
 
@@ -1867,6 +2069,26 @@ $$
 
 1. 其名字来自于《吹牛大王历险记》。
 2. 作为物理学家，你可以认为——**此法可以在不能再做实验时，凭空造出无数组实验**。
+
+
+
+## 混淆矩阵 | Confusion Matrix
+
+Q: Confusion Matrix 是什么？
+
+A: 无非是个 2×2 的矩阵 $[a,b;c,d]$ 罢了。再根据 $a, b, c, d$ 这四个数做一些加减乘除。所谓的查准率、查全率、假阴性、假阳性、alpha、beta、hit、miss、第一类错误、第二类错误——都是 $a, b, c, d$ 的加减乘除。[维基百科有全收录](https://en.wikipedia.org/wiki/Confusion_matrix)。
+
+<img src="ML_Note_Yixuan/image-20250114130313069.png" alt="image-20250114130313069" style="zoom: 33%;" />
+
+当然，这个矩阵可以从二分类拓展到多分类。
+
+
+
+## 张量 | Tensor
+
+Q: 深度学习里的Tensor和物理里的Tensor是啥关系？
+
+A: 若用爱因斯坦上下标的记号，你可以认为前者只有下标，后者有上下标。
 
 
 
