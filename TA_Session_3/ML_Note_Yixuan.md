@@ -1863,7 +1863,7 @@ $$
 
 数学意义：$f(x)$的泛函。
 
-物理意义：该离散型随机变量的不确定度。
+物理意义：该离散型随机变量的不确定程度。
 
 下界：0
 
@@ -1897,7 +1897,7 @@ A: 不一定。[Fisher Information](https://en.wikipedia.org/wiki/Fisher_informa
 
 Q: 交叉熵和香农信息的关系？
 
-A: 下文的KL散度、交叉熵、互信息都是建立在香农对信息的定义之上的。说难听点，都是后者的儿子或者孙子罢了。
+A: 下文的KL散度、交叉熵、互信息都是建立在香农对信息的定义之上的。**说难听点，都是后者的儿子或者孙子罢了。**
 
 
 
@@ -1922,7 +1922,7 @@ A: ASCII/UTF-8。浪费了空间，增强了可读性。但是，当你压缩文
 
 **定义**：
 
-两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的KL Divergence为：
+两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的KL散度为：
 $$
 D_{KL}(f(x),g(x)) := \sum_i p(x_i) log \frac{p(x_i)}{q(x_i)}
 $$
@@ -1988,13 +1988,15 @@ A: 能。([Jensen–Shannon Divergence on Wikipedia](https://en.wikipedia.org/wi
 
 定义：
 
-两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的Cross Entropy为：
+两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的交叉熵为：
 $$
 CE(f(x),q(x)) := - \sum_i f(x_i) log_2 \ g(x_i) = E_{f(x)}(- log_2 g(x))
 $$
 目标：衡量两个分布之间的差异。（和$D_{KL}$相同）
 
-灵感：香农给出信息的定义之后，很容易就能想到KL散度。
+灵感：香农给出信息的定义之后，很容易就能想到交叉熵。
+
+数学意义：$f(x)$和$g(x)$的泛函。
 
 物理意义：Cross Entropy represents the “average code length” you end up with if you encode data following f but use a code *optimized for* g.
 
@@ -2002,11 +2004,15 @@ $$
 
 上式的物理意义：(Cost with the wrong code)=(Penalty) + (Ideal Cost)
 
+下界：$H(f)$
+
+上界：$\infty$
+
 
 
 Q: Cross-Entropy和似然的关系？
 
-A：两者相等。
+A：前者等于负对数似然，即 $CE = - log \ likelihood$。
 
 
 
@@ -2016,9 +2022,69 @@ A: 前者作为损失函数，后者作为给出概率的方法。
 
 
 
-## Adam (Adaptive Moment Estimation)
+## 互信息 | Mutual Information
 
 定义：
+
+两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的互信息为：
+$$
+Mutual \ Info (f(x),g(x)) : = D_{KL}(f(x,y),f(x)g(x))
+$$
+目标：衡量两个分布是否独立。
+
+灵感：香农给出信息的定义之后，很容易就能想到互信息。
+
+数学意义：$f(x)$和$g(x)$的泛函。
+
+物理意义：$f(x,y)$ 和 $f(x)g(x)$ 之间的距离。
+
+下界：0
+
+上界：$min(n,m)$, where n is the number of all possible values of x and y is the number of all possible values of y.
+
+
+
+## 联合熵 | Joint Entropy
+
+定义：
+
+两个离散型随机变量的概率分布$f(x)$和$g(x)$之间的联合熵为：
+$$
+Joint \ Entropy (f(x),g(x)) := H(f(x,y))
+$$
+目标：衡量$f(x)$和$g(x)$的联合分布$f(x,y)$含有多少香农信息。
+
+灵感：香农给出信息的定义之后，很容易就能想到联合熵。
+
+数学意义：$f(x,y)$的泛函。
+
+物理意义：$f(x,y)$的不确定程度。
+
+下界：0
+
+上界：N, where N is the number of all possible values of (x,y).
+
+和以上几者的关系：
+
+<img src="ML_Note_Yixuan/image-20250115091447508.png" alt="image-20250115091447508" style="zoom:33%;" />
+
+<center> 图片来自网络 </center>
+
+$H(X,Y) = H(Y) + H(X|Y)$的物理意义：$(x,y)$的信息 = y 本身的信息 + 确定y后x的信息。
+
+$H(Y,X) = H(X) + H(Y|X)$的物理意义：$(y,x)$的信息 = x 本身的信息 + 确定x后y的信息。
+
+$H(X|Y) = H(X) - Mutual \ Info(X,Y)$ 的物理意义：确定y后x的信息 = x本身的信息 - y能给出的和x有关的信息。
+
+$H(Y|X) = H(Y) - Mutual \ Info(Y,X)$ 同理。
+
+$H(Y,X) = H(X) + H(Y) - Mutual \ Info(X,Y)$ 的物理意义：$(x,y)$的信息 = x 本身的信息 +  y 本身的信息 - x,y 之间的互信息。
+
+
+
+## Adam (Adaptive Moment Estimation)
+
+定义：([from Geek to Geek](https://www.geeksforgeeks.org/adam-adaptive-moment-estimation-optimization-ml/))
 
 <img src="ML_Note_Yixuan/image-20250114235701345.png" alt="image-20250114235701345" style="zoom:50%;" />
 
@@ -2088,7 +2154,7 @@ A: 无非是个 2×2 的矩阵 $[a,b;c,d]$ 罢了。再根据 $a, b, c, d$ 这�
 
 Q: 深度学习里的Tensor和物理里的Tensor是啥关系？
 
-A: 若用爱因斯坦上下标的记号，你可以认为前者只有下标，后者有上下标。
+A: 不严谨地说，若用爱因斯坦上下标的记号，你可以认为前者的一般形式用下标就足够，后者的一般形式用下标不够、必须用上下标。更严谨地说，物理学家更关心物理里的张量在坐标变换前后的变化，而深度学习里的张量只是一种记录多维数组的方法、毫不关心坐标变换。当然，前者是可以用后者记录的。
 
 
 
