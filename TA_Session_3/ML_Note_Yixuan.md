@@ -2142,11 +2142,13 @@ $$
 
 Q: Confusion Matrix 是什么？
 
-A: 无非是个 2×2 的矩阵 $[a,b;c,d]$ 罢了。再根据 $a, b, c, d$ 这四个数做一些加减乘除。所谓的查准率、查全率、假阴性、假阳性、alpha、beta、hit、miss、第一类错误、第二类错误——都是 $a, b, c, d$ 的加减乘除。[维基百科有全收录](https://en.wikipedia.org/wiki/Confusion_matrix)。
+A: 无非是个 2×2 的矩阵 $[a,b;c,d]$ 罢了。再根据 $a, b, c, d$ 这四个数做一些加减乘除。所谓的查准率、查全率、假阴性、假阳性、alpha、beta、hit、miss、第一类错误、第二类错误——都是 $a, b, c, d$ 的加减乘除。
 
 <img src="ML_Note_Yixuan/image-20250114130313069.png" alt="image-20250114130313069" style="zoom: 33%;" />
 
 当然，这个矩阵可以从二分类拓展到多分类。
+
+参考: [Confusion Matrix on Wikipedia](https://en.wikipedia.org/wiki/Confusion_matrix) (Strongly Recommend)
 
 
 
@@ -2155,6 +2157,8 @@ A: 无非是个 2×2 的矩阵 $[a,b;c,d]$ 罢了。再根据 $a, b, c, d$ 这�
 Q: 深度学习里的Tensor和物理里的Tensor是啥关系？
 
 A: 不严谨地说，若用爱因斯坦上下标的记号，你可以认为前者的一般形式用下标就足够，后者的一般形式用下标不够、必须用上下标。更严谨地说，物理学家更关心物理里的张量在坐标变换前后的变化，而深度学习里的张量只是一种记录多维数组的方法、毫不关心坐标变换。当然，前者是可以用后者记录的。
+
+参考: [Tensor on Wikipedia](https://en.wikipedia.org/wiki/Tensor) (Strongly Recommend)
 
 
 
