@@ -1723,7 +1723,10 @@ https://lmarena.ai/
 
 <center><a href="https://lmarena.ai/">图片来自竞技场</a></center>
 
-3. Deep Seek V3-Thinking | Deep Seek （我问了一个问题感觉还不错。再过一周，竞技场排名就会出来，到时看看！）
+3. Deep Seek R1| Deep Seek
+3. Kimi 1.5 | Kimi
+
+<img src="ML_Note_Yixuan/image-20250128073125084.png" alt="image-20250128073125084" style="zoom:33%;" />
 
 
 
